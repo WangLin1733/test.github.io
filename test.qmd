@@ -1,0 +1,70 @@
+---
+title: "tidydata"
+author: "wang lin"
+date: "`r Sys.Date()`"
+format:
+  html:
+    theme:
+        light: flatly
+        dark: darkly
+    toc: true
+    toc-title: Contents
+    toc-depth: 3 
+    toc-expand: 3 
+    toc-location: left
+    title-block-banner: "#003262"
+    number-sections: true
+    number-depth: 3
+---
+
+## 数据整理（Data tidying）
+
+官网教程地址：Tidy data • tidyr (tidyverse.org)
+
+[数据分析工作中有大约80%的时间都被花在了数据的清洗和准备上。而且，这不只是分析过程的起始步骤，随着分析过程的深入、新问题的出现或新数据的获取，这个步骤还要不断重复。为了更好地处理这一问题，本文聚焦于数据清洗中一个精华部分，即所谓的数据整理data tidying：对数据集进行组织整理，以便于分析。]{.smallcaps}
+
+整洁数据tidy data:主旨为此过程提供一种标准化的方法。有了这样的标准，初始的数据清洗就变得更为简单，因为你无需每次都从零开始，也不需要不断重复发明轮子。整洁数据标准的设计目的是为了促进原始数据的探索和分析，并简化兼容性强的数据分析工具的开发过程。现有工具常常需要转换，所以你可能需要花时间对一个工具的输出进行调整，才能将其输入到另一个工具中。整洁数据集和对应工具相辅相成，使数据分析工作变得更加简便，让你可以将注意力集中在所关注的主要问题上，而非数据处理的繁琐细节。
+
+## 定义整洁数据
+
+*"所有幸福的家庭都相似；每个不幸的家庭都各有各的不幸。" ------ 列夫·托尔斯泰*
+
+就像家庭一样，整洁的数据集都是相似的，但每个混乱的数据集混乱方式各不相同。整洁的数据集提供了一种标准化的方式来连接数据集的结构（物理布局）和它的语义（含义）。在本节中，我将为描述数据集的结构和语义提供一些标准词汇，然后定义整洁数据。
+
+### 数据结构（Data structure）
+
+大多数统计数据集是由**行**和**列**组成的数据框。**列**基本都有标签，**行**有时也有标签。以下代码虚拟了一个 `classroom` 的数据，这是一种常见于实际中的格式。该表有三列和四行，行和列都有标签。
+
+```{r}
+library(tibble)
+classroom <- tribble(
+  ~name,    ~quiz1, ~quiz2, ~test1,
+  "Billy",  NA,     "D",    "C",
+  "Suzy",   "F",    NA,     NA,
+  "Lionel", "B",    "C",    "B",
+  "Jenny",  "A",    "A",    "B"
+)
+```
+
+```{r}
+classroom
+```
+
+```{r}
+library(tidyr)
+library(dplyr)
+classroom2 <- classroom %>% 
+# %>%：管道操作符，即 `classroom` 数据集被传递到后边的函数中
+  pivot_longer(quiz1:test1, names_to = "assessment", values_to = "grade") %>% 
+  # pivot_longer() 宽数据变为长数据
+  # quiz1:test1 指定了要转换的列的范围，从 `quiz1` 列到 `test1` 列
+  # names_to = "assessment" 创建一个新列 "assessment"，储存原始列的名称，此处为每次评估和考试的名称。
+  # values_to = "grade" 创建了一个新的列 "grade"，用于存储原始列中的值，即每次评估的成绩。
+  arrange(name, assessment)
+  # arrange() 对数据进行排序，先按照 `name`，即学生姓名，再按照 `assessment`，即评估名称。 
+classroom2 
+```
+
+```{r}
+relig_income
+```
